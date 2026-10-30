@@ -1,0 +1,502 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<meta name="claude:viewport-fit-sides" content="cover">
+<title>Armado</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Comfortaa:wght@300;400;500;700&family=EB+Garamond:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+/* Layout: lockup + heading centered; three-reel rack with aleatorio beside it; decorative corners and a half wheel on wide screens */
+:root{
+  --paper:#ffffff;
+  --ink:#333333;
+  --ink-soft:#6b6b6b;
+  --hairline:#d9d9d9;
+  --teal:#44bec4;
+  --red:#dc1c1c;
+  --blue:#1771c4;
+  --yellow:#fdc12b;
+  --coral:#ef4836;
+  --btn:#debc00;
+  --btn-hover:#c9a800;
+  --band:#e9e9e9;
+  --cream:#f7f6f0;
+  --rim:#bfbfbf;
+  --scrim:rgba(38,38,38,.55);
+  --ff-ui:'Comfortaa','Nunito','Trebuchet MS',system-ui,sans-serif;
+  --ff-serif:'EB Garamond','Cormorant Garamond',Georgia,'Times New Roman',serif;
+  --ground:#f2f6f7;--well:#f5f8f9;--tealtint:rgba(68,190,196,.15);
+  --cell:clamp(88px,13.2vh,124px);
+  --gap:14px;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+[hidden]{display:none!important}
+html,body{margin:0}
+body{
+  background:var(--ground);color:var(--ink);font-family:var(--ff-ui);
+  padding-left:max(16px,env(safe-area-inset-left,0px));
+  padding-right:max(16px,env(safe-area-inset-right,0px));
+  padding-block:0;
+  min-height:100%;
+  -webkit-text-size-adjust:100%;
+}
+.page{position:relative;min-height:100vh;overflow:hidden;background:radial-gradient(640px 320px at 12% 0%,rgba(68,190,196,.20),transparent 70%),radial-gradient(560px 300px at 92% 6%,rgba(253,193,43,.20),transparent 70%),radial-gradient(520px 260px at 80% 100%,rgba(239,72,54,.10),transparent 70%);margin-inline:calc(-1 * max(16px,env(safe-area-inset-left,0px))) calc(-1 * max(16px,env(safe-area-inset-right,0px)));padding-inline:max(16px,env(safe-area-inset-left,0px)) max(16px,env(safe-area-inset-right,0px))}
+.wrap{position:relative;z-index:1;max-width:920px;margin:0 auto;padding-block:clamp(36px,7vh,76px) clamp(36px,5vh,56px);display:flex;flex-direction:column;align-items:center;gap:14px}
+h1{margin:0;font-weight:700;font-size:clamp(1.7rem,4.8vw,3rem);line-height:1.15;text-align:center;text-wrap:balance;letter-spacing:-.01em}
+h1 span{color:var(--red)}
+.hint{margin:0 0 6px;font-size:.9rem;font-weight:500;color:var(--ink-soft);text-align:center;max-width:64ch;text-wrap:balance;line-height:1.5}
+.machine{width:100%;background:var(--paper);border:1px solid #e3eaec;border-radius:30px;padding:clamp(16px,3vw,34px);box-shadow:0 24px 60px rgba(30,60,70,.10);display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:clamp(16px,3vw,36px);row-gap:20px}
+.rack{display:flex;flex-direction:column;gap:6px;min-width:0}
+.rack-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--gap)}
+.rack-row.reels{padding-block:0}
+.nudge{justify-self:center;width:64px;height:38px;display:grid;place-items:center;border:1px solid #dfe6e8;background:var(--paper);border-radius:999px;cursor:pointer;color:var(--ink);padding:0;touch-action:manipulation}
+.nudge svg{width:30px;height:26px;display:block}
+.nudge.down svg{transform:rotate(180deg)}
+.nudge:hover{color:#0c5f64;background:var(--tealtint);border-color:var(--teal)}
+.nudge:focus-visible,.reel:focus-visible,.btn:focus-visible,.close:focus-visible{outline:3px solid var(--blue);outline-offset:3px}
+.nudge[aria-disabled="true"],.btn[aria-disabled="true"]{opacity:.45;cursor:default}
+.reel{position:relative;height:calc(var(--cell) * 3);overflow:hidden;touch-action:none;cursor:grab;user-select:none;-webkit-user-select:none;border-radius:22px;background:var(--well)}
+.reel:active{cursor:grabbing}
+.band{position:absolute;left:6px;right:6px;top:calc(var(--cell) + 4px);height:calc(var(--cell) - 8px);background:var(--tealtint);border-radius:16px;box-shadow:inset 0 0 0 2px rgba(68,190,196,.5);pointer-events:none}
+.cell{position:absolute;left:0;right:0;top:0;height:var(--cell);padding:10px 8px;display:grid;place-items:center;will-change:transform,opacity;pointer-events:none}
+.cell svg{width:100%;height:100%;display:block}
+.reel.spinning .cell svg{filter:blur(.9px)}
+.reel-fade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(to bottom,var(--well) 0,rgba(245,248,249,0) 24%,rgba(245,248,249,0) 76%,var(--well) 100%)}
+.pick{margin:6px 0 0;text-align:center;display:flex;flex-direction:column;gap:2px;align-items:center}
+.pick .slot{font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;color:var(--ink-soft);font-weight:700}
+.pick .name{font-family:var(--ff-serif);font-weight:700;font-size:clamp(1.05rem,2.6vw,1.45rem);letter-spacing:.04em;text-transform:uppercase;line-height:1.1;border-bottom:2px solid var(--c,var(--red));padding-bottom:1px}
+.side{display:flex;flex-direction:column;align-items:center;gap:10px;text-align:center;max-width:170px}
+.side p{margin:0;font-size:.82rem;font-weight:500;color:var(--ink-soft);line-height:1.45;text-wrap:balance}
+.btn{font-family:var(--ff-ui);font-weight:500;font-size:clamp(1.15rem,2.6vw,1.5rem);background:var(--btn);color:#2b2b2b;border:0;border-radius:999px;padding:11px 34px;cursor:pointer;line-height:1.25;touch-action:manipulation;box-shadow:0 8px 20px rgba(222,188,0,.35);transition:background .15s,transform .1s}
+.btn:hover{background:var(--btn-hover)}
+.btn:active{transform:translateY(1px)}
+.btn.quiet{box-shadow:inset 0 0 0 2px var(--ink);background:transparent;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.btn.quiet:hover{background:#f1f1f1}
+.confirm-row{grid-column:1/-1;display:flex;justify-content:center}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (max-width:700px){
+  :root{--cell:clamp(78px,13vh,104px);--gap:8px}
+  .machine{grid-template-columns:minmax(0,1fr)}
+  .side{flex-direction:row;max-width:none;justify-content:center;gap:14px;text-align:left}
+  .side p{max-width:15ch}
+  .nudge{width:100%;max-width:64px}
+  .pick .name{letter-spacing:.02em}
+}
+/* dialog */
+.overlay{position:fixed;inset:0;z-index:50;display:grid;place-items:center;background:var(--scrim);padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));overflow:hidden}
+.panel{position:relative;background:var(--paper);color:var(--ink);width:min(760px,100%);max-height:100%;overflow:auto;border-radius:22px;padding:clamp(20px,4vw,34px);box-shadow:0 20px 60px rgba(0,0,0,.28);animation:pop .26s ease-out both}
+@keyframes pop{from{opacity:0;transform:translateY(12px) scale(.97)}to{opacity:1;transform:none}}
+.close{position:absolute;top:10px;right:10px;width:44px;height:44px;border:0;border-radius:50%;background:#f1f1f1;color:var(--ink);font-size:1.6rem;line-height:1;cursor:pointer;display:grid;place-items:center;padding:0}
+.close:hover{background:#e4e4e4}
+.kicker{margin:0;font-size:.8rem;letter-spacing:.16em;text-transform:uppercase;color:var(--red);font-weight:700;padding-right:48px}
+.panel h2{margin:6px 0 0;font-weight:500;font-size:clamp(1.5rem,4.4vw,2.3rem);line-height:1.2;text-wrap:balance;padding-right:40px;position:relative;padding-bottom:12px}
+.panel h2::after{content:"";position:absolute;left:0;width:min(220px,50%);bottom:0;height:5px;border-top:2px solid var(--red);border-bottom:2px solid var(--teal)}
+.lead{margin:12px 0 0;font-family:var(--ff-serif);font-size:1.18rem;color:var(--ink-soft);line-height:1.45}
+.stage{margin:10px 0 4px;display:grid;place-items:center}
+.stage svg{width:100%;max-height:min(42vh,360px);height:auto;display:block}
+.rows{list-style:none;margin:8px 0 0;padding:0;display:grid;gap:12px}
+.rows li{display:grid;grid-template-columns:minmax(92px,auto) minmax(0,1fr);gap:4px 14px;align-items:baseline}
+.chip{display:inline-flex;flex-direction:column;gap:1px;padding:6px 12px 7px;border-radius:12px;background:var(--c);color:var(--cc,#fff);line-height:1.1}
+.chip small{font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;font-weight:700;opacity:.92}
+.chip b{font-family:var(--ff-serif);font-size:1.15rem;letter-spacing:.04em;text-transform:uppercase;font-weight:700}
+.rows p{margin:0;font-family:var(--ff-serif);font-size:1.12rem;line-height:1.45}
+.summary{margin:16px 0 0;padding-top:14px;border-top:1px solid var(--hairline);font-family:var(--ff-serif);font-size:1.22rem;line-height:1.5}
+.dialog-actions{margin-top:18px;display:flex;flex-wrap:wrap;gap:12px;justify-content:flex-end}
+.dialog-actions .btn{font-size:1.05rem;padding:9px 24px}
+@media (max-width:520px){.rows li{grid-template-columns:minmax(0,1fr)}.chip{justify-self:start;flex-direction:row;gap:8px;align-items:baseline}.dialog-actions .btn{flex:1 1 100%}}
+.confetti{position:absolute;top:-24px;pointer-events:none;animation:fall linear forwards;will-change:transform}
+@keyframes fall{to{transform:translate3d(var(--dx),110vh,0) rotate(var(--rot))}}
+@media (prefers-reduced-motion:reduce){.panel{animation:none}.confetti{display:none}.btn{transition:none}}
+</style>
+
+<div class="page">
+  <main class="wrap">
+    <h1>Arma tu propia bicicleta <span>identitaria</span>!</h1>
+    <p class="hint">Arrastra las partes o toca las flechas para ir moviendo los casilleros.</p>
+
+    <section class="machine" aria-label="Armador de bicicleta">
+      <div class="rack" id="rack"></div>
+      <div class="side">
+        <button class="btn" id="rnd" type="button">aleatorio</button>
+        <p>Haz que la bici te escoja a ti</p>
+      </div>
+      <div class="confirm-row"><button class="btn" id="ok" type="button">confirmar</button></div>
+    </section>
+    <p class="sr" id="live" aria-live="polite"></p>
+  </main>
+</div>
+
+<div class="overlay" id="ov" hidden>
+  <div class="panel" role="dialog" aria-modal="true" aria-labelledby="dlg-title" id="panel">
+    <button class="close" id="close" type="button" aria-label="Cerrar">&times;</button>
+    <p class="kicker" id="dlg-kicker"></p>
+    <h2 id="dlg-title"></h2>
+    <p class="lead" id="dlg-lead"></p>
+    <div class="stage" id="dlg-stage"></div>
+    <ul class="rows" id="dlg-rows"></ul>
+    <p class="summary" id="dlg-sum"></p>
+    <div class="dialog-actions">
+      <button class="btn quiet" id="again" type="button">Seguir armando</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PARTS = {"bmx": {"wheelL": {"src": "parts/bmx_wheelL.webp", "w": 380, "h": 405, "cx": 190.0, "cy": 202.5}, "wheelR": {"src": "parts/bmx_wheelR.webp", "w": 384, "h": 406, "cx": 192.0, "cy": 203.0}, "frame": {"src": "parts/bmx_frame.webp", "w": 547, "h": 331, "RD": [11.9, 267.8], "BB": [191.2, 307.7], "Hb": [524.4, 102.8], "Ht": [502.4, 10.2], "ST": [128.4, 109.6]}, "seat": {"src": "parts/bmx_seat.webp", "w": 250, "h": 244, "P": [171.7, 222.7], "Q": [132.6, 105.4]}, "bars": {"src": "parts/bmx_bars.webp", "w": 457, "h": 258, "S": [237.2, 248.2]}, "drive": {"src": "parts/bmx_drive.webp", "w": 292, "h": 177, "A": [-171.7, 65.4], "B": [74.8, 78.2], "rr": 71.4}}, "fixie": {"wheelL": {"src": "parts/fixie_wheelL.webp", "w": 415, "h": 428, "cx": 207.5, "cy": 214.0}, "wheelR": {"src": "parts/fixie_wheelR.webp", "w": 419, "h": 434, "cx": 209.5, "cy": 217.0}, "frame": {"src": "parts/fixie_frame.webp", "w": 581, "h": 407, "RD": [15.3, 265.2], "BB": [251.6, 385.0], "Hb": [563.6, 112.2], "Ht": [534.6, 35.7], "ST": [125.8, 65.4]}, "seat": {"src": "parts/fixie_seat.webp", "w": 224, "h": 184, "P": [153.0, 174.2], "Q": [112.2, 62.0]}, "bars": {"src": "parts/fixie_bars.webp", "w": 259, "h": 164, "S": [67.1, 15.3]}, "drive": {"src": "parts/fixie_drive.webp", "w": 266, "h": 152, "A": [-95.2, 122.4], "B": [73.1, 75.6], "rr": 71.4}}, "gravel": {"wheelL": {"src": "parts/gravel_wheelL.webp", "w": 410, "h": 423, "cx": 205.0, "cy": 211.5}, "wheelR": {"src": "parts/gravel_wheelR.webp", "w": 416, "h": 432, "cx": 208.0, "cy": 216.0}, "frame": {"src": "parts/gravel_frame.webp", "w": 548, "h": 403, "RD": [16.2, 249.0], "BB": [230.4, 376.6], "Hb": [527.8, 108.8], "Ht": [498.1, 13.6], "ST": [117.3, 60.4]}, "seat": {"src": "parts/gravel_seat.webp", "w": 269, "h": 200, "P": [187.8, 187.8], "Q": [136.8, 54.4]}, "bars": {"src": "parts/gravel_bars.webp", "w": 341, "h": 208, "S": [133.4, 38.2]}, "drive": {"src": "parts/gravel_drive.webp", "w": 257, "h": 149, "A": [-105.4, 108.8], "B": [73.1, 70.6], "rr": 69.7}}, "lowrider": {"wheelL": {"src": "parts/lowrider_wheelL.webp", "w": 373, "h": 390, "cx": 186.5, "cy": 195.0}, "wheelR": {"src": "parts/lowrider_wheelR.webp", "w": 373, "h": 390, "cx": 186.5, "cy": 195.0}, "frame": {"src": "parts/lowrider_frame.webp", "w": 540, "h": 298, "RD": [12.8, 194.6], "BB": [193.0, 281.3], "Hb": [528.7, 105.4], "Ht": [487.9, 11.9], "ST": [143.6, 37.4]}, "seat": {"src": "parts/lowrider_seat.webp", "w": 362, "h": 320, "P": [294.1, 263.5], "Q": [264.3, 164.0]}, "bars": {"src": "parts/lowrider_bars.webp", "w": 337, "h": 382, "S": [199.8, 358.7]}, "drive": {"src": "parts/lowrider_drive.webp", "w": 252, "h": 190, "B": [59.5, 58.6], "rr": 59.5}}};
+const BIKES = ['fixie','bmx','lowrider','gravel'];
+const NAME = {fixie:'Fixie', bmx:'BMX', lowrider:'Lowrider', gravel:'Gravel'};
+const COLOR = {fixie:'#ef4836', bmx:'#1771c4', lowrider:'#fdc12b', gravel:'#44bec4'};
+const CHIPINK = {fixie:'#fff', bmx:'#fff', lowrider:'#2b2b2b', gravel:'#1f3a3c'};
+const SLOTS = [{key:'w',label:'Ruedas'},{key:'b',label:'Cuerpo'},{key:'f',label:'Frente'}];
+
+/* ---------- geometry ---------- */
+const D = 300, R = [190,330], F = [760,330];
+const SEAT_W = {fixie:112,bmx:104,lowrider:122,gravel:116};
+const BARS = {fixie:['w',150],bmx:['w',225],lowrider:['h',210],gravel:['w',158]};
+const LOW_DRIVE_W = 175;
+const rad = d => d*Math.PI/180, deg = r => r*180/Math.PI;
+const mod = (n,m) => ((n%m)+m)%m;
+const unit = v => { const l = Math.hypot(v[0],v[1]) || 1; return [v[0]/l, v[1]/l]; };
+const ang = v => deg(Math.atan2(v[1], v[0]));
+function mat(anchor, target, scale, rot){
+  const c = Math.cos(rad(rot))*scale, s = Math.sin(rad(rot))*scale;
+  return [c, s, -s, c, target[0]-(c*anchor[0]-s*anchor[1]), target[1]-(s*anchor[0]+c*anchor[1])];
+}
+const ap = (m,p) => [m[0]*p[0]+m[2]*p[1]+m[4], m[1]*p[0]+m[3]*p[1]+m[5]];
+
+function Scene(){ this.out = []; this.pts = []; }
+Scene.prototype.img = function(part, m){
+  this.out.push('<image href="'+part.src+'" width="'+part.w+'" height="'+part.h+'" transform="matrix('+m.map(n=>n.toFixed(4)).join(' ')+')"/>');
+  [[0,0],[part.w,0],[part.w,part.h],[0,part.h]].forEach(p => this.pts.push(ap(m,p)));
+};
+Scene.prototype.raw = function(markup, pts){ this.out.push(markup); (pts||[]).forEach(p => this.pts.push(p)); };
+Scene.prototype.svg = function(pad, label){
+  const xs = this.pts.map(p=>p[0]), ys = this.pts.map(p=>p[1]);
+  const x0 = Math.min(...xs)-pad, y0 = Math.min(...ys)-pad;
+  const w = Math.max(...xs)+pad-x0, h = Math.max(...ys)+pad-y0;
+  return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="'+[x0,y0,w,h].map(n=>n.toFixed(1)).join(' ')+'" preserveAspectRatio="xMidYMid meet"'+(label?' role="img" aria-label="'+label+'"':' aria-hidden="true"')+'>'+this.out.join('')+'</svg>';
+};
+
+function wheelM(part, target){ return mat([part.w/2, part.h/2], target, D/Math.max(part.w,part.h), 0); }
+
+function bodyGeom(b){
+  const p = PARTS[b], fr = p.frame;
+  const s = 510/(fr.Hb[0]-fr.RD[0]);
+  const drop = s*(fr.BB[1]-fr.RD[1]);
+  const shift = Math.max(0, drop-75);
+  const mf = mat(fr.RD, [R[0], R[1]-shift], s, 0);
+  const BB = ap(mf,fr.BB), Hb = ap(mf,fr.Hb), Ht = ap(mf,fr.Ht), ST = ap(mf,fr.ST);
+  const se = p.seat;
+  const vt = [ST[0]-BB[0], ST[1]-BB[1]], vp = [se.Q[0]-se.P[0], se.Q[1]-se.P[1]], u = unit(vt);
+  const ms = mat(se.P, [ST[0]-u[0]*14, ST[1]-u[1]*14], SEAT_W[b]/se.w, ang(vt)-ang(vp));
+  const dr = p.drive, ds = 49/dr.rr;
+  let drot = 0;
+  if (dr.A) drot = ang([R[0]-BB[0], R[1]-BB[1]]) - ang([dr.A[0]-dr.B[0], dr.A[1]-dr.B[1]]);
+  const md = mat(dr.B, BB, ds, drot);
+  const r2 = dr.rr*ds*0.94, r1 = 13, d = [BB[0]-R[0], BB[1]-R[1]], L = Math.hypot(d[0],d[1]), phi = rad(ang(d)), off = Math.acos((r1-r2)/L);
+  const chain = [1,-1].map(sg => {
+    const n = [Math.cos(phi+sg*off), Math.sin(phi+sg*off)];
+    return [[R[0]+r1*n[0], R[1]+r1*n[1]], [BB[0]+r2*n[0], BB[1]+r2*n[1]]];
+  });
+  const chainSVG = '<circle cx="'+R[0]+'" cy="'+R[1]+'" r="13" fill="#1b1b1b"/><circle cx="'+R[0]+'" cy="'+R[1]+'" r="4" fill="#f5c400"/>' +
+    chain.map(c => '<path d="M'+c[0][0].toFixed(1)+' '+c[0][1].toFixed(1)+' L'+c[1][0].toFixed(1)+' '+c[1][1].toFixed(1)+'" stroke="#f5c400" stroke-width="7" stroke-linecap="round"/><path d="M'+c[0][0].toFixed(1)+' '+c[0][1].toFixed(1)+' L'+c[1][0].toFixed(1)+' '+c[1][1].toFixed(1)+'" stroke="#1b1b1b" stroke-width="4.4" stroke-dasharray="2.4 4.2"/>').join('');
+  return {fr, mf, se, ms, dr, md, chainSVG, BB, Hb, Ht, ST};
+}
+function barsM(b, target, rot){
+  const ba = PARTS[b].bars, spec = BARS[b];
+  return mat(ba.S, target, spec[1]/(spec[0]==='w'?ba.w:ba.h), rot);
+}
+const FORK = '#2b2b30';
+
+function wheelsCell(b){
+  const sc = new Scene(), p = PARTS[b];
+  sc.img(p.wheelL, wheelM(p.wheelL,[150,150]));
+  sc.img(p.wheelR, wheelM(p.wheelR,[462,150]));
+  return sc.svg(4);
+}
+function bodyCell(b){
+  const sc = new Scene(), g = bodyGeom(b);
+  sc.img(g.se, g.ms); sc.img(g.fr, g.mf); sc.raw(g.chainSVG, [[R[0]-14,R[1]-14]]); sc.img(g.dr, g.md);
+  return sc.svg(8);
+}
+function frontCell(b){
+  const sc = new Scene(), rot = -16;
+  const up = [Math.sin(rad(rot)), -Math.cos(rad(rot))], dn = [-up[0], -up[1]];
+  const a = [dn[0]*6, dn[1]*6], e = [dn[0]*200, dn[1]*200];
+  sc.raw('<line x1="'+a[0]+'" y1="'+a[1]+'" x2="'+e[0]+'" y2="'+e[1]+'" stroke="'+FORK+'" stroke-width="12" stroke-linecap="round"/><circle cx="'+e[0]+'" cy="'+e[1]+'" r="9" fill="'+FORK+'"/>', [[a[0]-8,a[1]-8],[e[0]+10,e[1]+10]]);
+  sc.img(PARTS[b].bars, barsM(b,[0,0],rot));
+  return sc.svg(8);
+}
+function bikeSVG(sel){
+  const sc = new Scene();
+  const wp = PARTS[sel.w], g = bodyGeom(sel.b), bp = PARTS[sel.f];
+  const gy = R[1]+D/2-3;
+  sc.raw('<ellipse cx="'+((R[0]+F[0])/2)+'" cy="'+gy+'" rx="'+((F[0]-R[0])/2+D*0.62)+'" ry="9" fill="rgba(0,0,0,.09)"/>', [[R[0]-D/2,gy-9],[F[0]+D/2,gy+9]]);
+  sc.img(wp.wheelL, wheelM(wp.wheelL,R));
+  sc.img(wp.wheelR, wheelM(wp.wheelR,F));
+  sc.img(g.se, g.ms);
+  const c = [g.Hb[0]+(F[0]-g.Hb[0])*0.14, g.Hb[1]+(F[1]-g.Hb[1])*0.78];
+  sc.raw('<path d="M'+g.Hb[0].toFixed(1)+' '+g.Hb[1].toFixed(1)+' Q'+c[0].toFixed(1)+' '+c[1].toFixed(1)+' '+F[0]+' '+F[1]+'" fill="none" stroke="'+FORK+'" stroke-width="11" stroke-linecap="round"/>', [g.Hb]);
+  sc.img(g.fr, g.mf);
+  const v = [g.Ht[0]-g.Hb[0], g.Ht[1]-g.Hb[1]], u = unit(v);
+  sc.img(bp.bars, barsM(sel.f, [g.Ht[0]-u[0]*2, g.Ht[1]-u[1]*2], ang(v)+90));
+  sc.raw(g.chainSVG, []);
+  sc.img(g.dr, g.md);
+  sc.raw('<circle cx="'+F[0]+'" cy="'+F[1]+'" r="8" fill="'+FORK+'"/>', []);
+  return sc.svg(14, 'Tu bicicleta: ruedas '+NAME[sel.w]+', cuerpo '+NAME[sel.b]+', frente '+NAME[sel.f]);
+}
+
+/* ---------- copy ---------- */
+const TXT = {
+  w:{
+    fixie:'Tus ruedas son de Fixie: avanzas directo, sin cambios ni atajos, sintiendo cada pedalada.',
+    bmx:'Tus ruedas son de BMX: compactas y resistentes, hechas para saltar, caer y volver a intentarlo.',
+    lowrider:'Tus ruedas son de Lowrider: cara blanca y rayos finos, ruedas que prefieren ir lento para que todos las vean pasar.',
+    gravel:'Tus ruedas son de Gravel: tacos anchos y goma marrón, listas para el asfalto, la tierra y lo que venga después.'
+  },
+  b:{
+    fixie:'Tu cuerpo es de Fixie: un cuadro rojo, limpio y sin adornos, de los que dicen justo lo necesario.',
+    bmx:'Tu cuerpo es de BMX: un cuadro azul corto y fuerte, con energía de sobra y poca paciencia para quedarse quieto.',
+    lowrider:'Tu cuerpo es de Lowrider: líneas curvas, asiento largo y respaldo cromado, hecho para lucirse y para durar.',
+    gravel:'Tu cuerpo es de Gravel: un cuadro azul versátil, firme y liviano, preparado para recorrer cualquier camino.'
+  },
+  f:{
+    fixie:'Tu frente es de Fixie: un manubrio de ruta con cinta amarilla, que mira siempre hacia delante.',
+    bmx:'Tu frente es de BMX: un manubrio ancho y amarillo, listo para girar en el aire y mandar en cada truco.',
+    lowrider:'Tu frente es de Lowrider: un manubrio alto con espejo, para pedalear erguido y con la frente en alto.',
+    gravel:'Tu frente es de Gravel: un manubrio de curvas anchas con cinta amarilla, pensado para ir cómodo durante horas.'
+  }
+};
+const PURE = {
+  fixie:'Eres puro minimalismo: para ti la velocidad es una forma de pensar y lo esencial siempre alcanza.',
+  bmx:'Eres pura energía: cada obstáculo te parece una rampa y cada caída, un buen motivo para dar otra vuelta.',
+  lowrider:'Eres puro orgullo: personalizas, pules y cuidas cada detalle, y entiendes la bici como una comunidad.',
+  gravel:'Eres pura curiosidad: te gusta salir sin un mapa claro y descubrir qué hay donde termina el asfalto.'
+};
+const MIX = {
+  fixie:{
+    bmx:'Mantienes la sencillez del Fixie, pero con un toque de BMX que te empuja a hacer una travesura de vez en cuando.',
+    lowrider:'Tu sencillez de Fixie se mezcla con el estilo del Lowrider: sobrio por fuera y con mucha personalidad por dentro.',
+    gravel:'Tu rapidez de Fixie gana un poco de aventura Gravel: sigues yendo directo, pero ahora te animas a salir de la ciudad.'
+  },
+  bmx:{
+    fixie:'Tu energía de BMX se calma con una dosis de Fixie: sigues siendo inquieto, pero ahora sabes cuándo ir en línea recta.',
+    lowrider:'Tu espíritu de BMX adopta el orgullo del Lowrider: saltas alto, pero también te importa cómo te ves al aterrizar.',
+    gravel:'Tu espíritu de BMX suma la resistencia del Gravel: sigues buscando saltos, pero ahora con muchos kilómetros por delante.'
+  },
+  lowrider:{
+    fixie:'Tu estilo de Lowrider se afina con algo de Fixie: sigues luciéndote, pero con menos adornos y más claridad.',
+    bmx:'Tu estilo de Lowrider se agita con algo de BMX: sigues luciéndote, pero con ganas de trucos y de movimiento.',
+    gravel:'Tu estilo de Lowrider se abre al camino Gravel: sigues cuidando cada detalle, pero ya no le temes al polvo.'
+  },
+  gravel:{
+    fixie:'Tu espíritu explorador de Gravel se simplifica con Fixie: sigues saliendo lejos, pero llevando solo lo justo.',
+    bmx:'Tu espíritu explorador de Gravel se contagia de BMX: sigues buscando caminos nuevos, y ahora también los saltas.',
+    lowrider:'Tu espíritu explorador de Gravel se viste de Lowrider: sigues buscando caminos nuevos, pero los recorres con estilo.'
+  }
+};
+const NOTE = [
+  'Esto se nota sobre todo en cómo te mueves.',
+  'Esto se nota sobre todo en tu carácter.',
+  'Esto se nota sobre todo en el rumbo que eliges.'
+];
+const SLOTW = ['ruedas','cuerpo','frente'];
+const MISSING = {
+  fixie:'Es una mezcla poco común: no hay nada de Fixie en tu bici, así que tu camino rara vez es el más directo y casi siempre es el más interesante.',
+  bmx:'Es una mezcla poco común: no hay nada de BMX en tu bici, así que prefieres la constancia a los saltos y llegas lejos sin hacer ruido.',
+  lowrider:'Es una mezcla poco común: no hay nada de Lowrider en tu bici, así que te importa más avanzar que posar y casi nunca vas despacio.',
+  gravel:'Es una mezcla poco común: no hay nada de Gravel en tu bici, así que prefieres tener un destino claro antes que un camino abierto.'
+};
+function describe(sel){
+  const arr = [sel.w, sel.b, sel.f];
+  const counts = {}; arr.forEach(x => counts[x] = (counts[x]||0)+1);
+  const kinds = Object.keys(counts).length;
+  let title, lead, summary;
+  if (kinds === 1){
+    title = '¡Eres 100% '+NAME[arr[0]]+'!';
+    lead = 'Armaste una bici de una sola familia: cada pieza viene del mismo mundo.';
+    summary = PURE[arr[0]];
+  } else if (kinds === 2){
+    const m = Object.keys(counts).find(k => counts[k] === 2);
+    const o = Object.keys(counts).find(k => counts[k] === 1);
+    const pos = arr.indexOf(o);
+    title = NAME[m]+' con '+SLOTW[pos]+' de '+NAME[o];
+    lead = 'Armaste una bici con una identidad clara y un detalle que la hace distinta.';
+    summary = MIX[m][o]+' '+NOTE[pos];
+  } else {
+    const x = BIKES.find(k => !counts[k]);
+    title = 'Híbrida '+arr.map(k=>NAME[k]).join('-');
+    lead = 'Armaste una bici única: cada pieza viene de una familia distinta.';
+    summary = MISSING[x];
+  }
+  const rows = SLOTS.map((s,i) => ({slot:s.label, bike:arr[i], text:TXT[s.key][arr[i]]}));
+  return {title, lead, summary, rows};
+}
+
+/* ---------- reels ---------- */
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const rack = document.getElementById('rack');
+const live = document.getElementById('live');
+const CELLS = {w:wheelsCell, b:bodyCell, f:frontCell};
+const chev = '<svg viewBox="0 0 30 26" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 12 L15 3 L26 12"/><path d="M4 22 L15 13 L26 22"/></svg>';
+const rowUp = document.createElement('div'), rowReels = document.createElement('div'), rowDown = document.createElement('div'), rowPick = document.createElement('div');
+rowUp.className = rowDown.className = 'rack-row';
+rowReels.className = 'rack-row reels';
+rowPick.className = 'rack-row';
+[rowUp,rowReels,rowDown,rowPick].forEach(r => rack.appendChild(r));
+let busy = false;
+const reels = SLOTS.map((slot, si) => {
+  const up = document.createElement('button'); up.type = 'button'; up.className = 'nudge up'; up.innerHTML = chev; up.setAttribute('aria-label', slot.label+': siguiente opción');
+  const down = document.createElement('button'); down.type = 'button'; down.className = 'nudge down'; down.innerHTML = chev; down.setAttribute('aria-label', slot.label+': opción anterior');
+  const el = document.createElement('div'); el.className = 'reel'; el.tabIndex = 0; el.setAttribute('role','group'); el.setAttribute('aria-label', slot.label+'. Usa las flechas arriba y abajo para cambiar.');
+  el.innerHTML = '<div class="band"></div>';
+  const cells = BIKES.map(b => { const c = document.createElement('div'); c.className = 'cell'; c.innerHTML = CELLS[slot.key](b); el.appendChild(c); return c; });
+  el.insertAdjacentHTML('beforeend','<div class="reel-fade"></div>');
+  const pick = document.createElement('p'); pick.className = 'pick';
+  pick.innerHTML = '<span class="slot">'+slot.label+'</span><strong class="name"></strong>';
+  rowUp.appendChild(up); rowReels.appendChild(el); rowDown.appendChild(down); rowPick.appendChild(pick);
+  const r = {slot, el, cells, up, down, pick, name: pick.querySelector('.name'), pos: 2, cellH: 100, raf: 0, last: -1};
+  return r;
+});
+function cellSize(){ return reels[0].el.clientHeight/3; }
+function renderReel(r){
+  const h = r.cellH;
+  r.cells.forEach((c, j) => {
+    const d = mod(j - r.pos + 2, 4) - 2, a = Math.abs(d);
+    const op = a <= 1 ? 1 - 0.62*a : Math.max(0, 0.38 - (a-1)*0.76);
+    const sc = 1 - 0.07*Math.min(a,1.5);
+    c.style.transform = 'translate3d(0,'+(d*h + h).toFixed(1)+'px,0) scale('+sc.toFixed(3)+')';
+    c.style.opacity = op.toFixed(3);
+  });
+  const idx = mod(Math.round(r.pos), 4);
+  if (idx !== r.last){
+    r.last = idx;
+    const b = BIKES[idx];
+    r.name.textContent = NAME[b];
+    r.pick.style.setProperty('--c', COLOR[b]);
+  }
+}
+function selection(){ const o = {}; reels.forEach(r => o[r.slot.key] = BIKES[mod(Math.round(r.pos),4)]); return o; }
+function announce(){ const s = selection(); live.textContent = 'Ruedas '+NAME[s.w]+', cuerpo '+NAME[s.b]+', frente '+NAME[s.f]+'.'; }
+const ease = t => 1 - Math.pow(1-t, 3);
+const easeSlow = t => 1 - Math.pow(1-t, 4);
+function glide(r, target, dur, fn){
+  cancelAnimationFrame(r.raf);
+  const from = r.pos;
+  if (reduce || dur <= 0 || from === target){ r.pos = target; renderReel(r); return Promise.resolve(); }
+  const t0 = performance.now();
+  return new Promise(res => {
+    const tick = now => {
+      const t = Math.min(1, (now-t0)/dur);
+      r.pos = from + (target-from)*fn(t);
+      renderReel(r);
+      if (t < 1) r.raf = requestAnimationFrame(tick); else res();
+    };
+    r.raf = requestAnimationFrame(tick);
+  });
+}
+function step(r, n){ if (busy) return; glide(r, Math.round(r.pos)+n, 260, ease).then(announce); }
+reels.forEach(r => {
+  r.up.addEventListener('click', () => step(r, 1));
+  r.down.addEventListener('click', () => step(r, -1));
+  r.el.addEventListener('keydown', e => {
+    if (e.key === 'ArrowUp'){ e.preventDefault(); step(r, 1); }
+    else if (e.key === 'ArrowDown'){ e.preventDefault(); step(r, -1); }
+  });
+  let drag = null;
+  r.el.addEventListener('pointerdown', e => {
+    if (busy || (e.pointerType === 'mouse' && e.button !== 0)) return;
+    cancelAnimationFrame(r.raf);
+    r.el.setPointerCapture(e.pointerId);
+    drag = {y:e.clientY, pos:r.pos, ly:e.clientY, lt:performance.now(), v:0};
+  });
+  r.el.addEventListener('pointermove', e => {
+    if (!drag) return;
+    const now = performance.now(), dt = Math.max(1, now-drag.lt);
+    r.pos = drag.pos - (e.clientY-drag.y)/r.cellH;
+    drag.v = 0.7*drag.v + 0.3*(-(e.clientY-drag.ly)/r.cellH/dt);
+    drag.ly = e.clientY; drag.lt = now;
+    renderReel(r);
+  });
+  const end = () => {
+    if (!drag) return;
+    const v = drag.v; drag = null;
+    const target = Math.round(r.pos + Math.max(-2.5, Math.min(2.5, v*220)));
+    glide(r, target, 420, ease).then(announce);
+  };
+  r.el.addEventListener('pointerup', end);
+  r.el.addEventListener('pointercancel', end);
+});
+function layoutReels(){ const h = cellSize(); reels.forEach(r => { r.cellH = h; renderReel(r); }); }
+new ResizeObserver(layoutReels).observe(reels[0].el);
+layoutReels();
+
+const rnd = document.getElementById('rnd'), ok = document.getElementById('ok');
+function setBusy(v){
+  busy = v;
+  [rnd, ok].forEach(b => b.setAttribute('aria-disabled', v ? 'true' : 'false'));
+  reels.forEach(r => { r.up.setAttribute('aria-disabled', v); r.down.setAttribute('aria-disabled', v); r.el.classList.toggle('spinning', v && !reduce); });
+}
+rnd.addEventListener('click', () => {
+  if (busy) return;
+  setBusy(true);
+  Promise.all(reels.map((r, i) => {
+    const cur = Math.round(r.pos), want = Math.floor(Math.random()*4);
+    const target = cur + 4*(2+i) + mod(want - mod(cur,4), 4);
+    return glide(r, target, 1300 + i*480, easeSlow);
+  })).then(() => { setBusy(false); announce(); });
+});
+
+/* ---------- dialog ---------- */
+const ov = document.getElementById('ov'), panel = document.getElementById('panel'), closeBtn = document.getElementById('close');
+let lastFocus = null;
+function confetti(){
+  if (reduce) return;
+  const cols = ['#44bec4','#fdc12b','#ef4836','#1771c4','#dc1c1c'];
+  for (let i = 0; i < 30; i++){
+    const s = document.createElement('span'); s.className = 'confetti';
+    const diamond = i % 3 !== 0, size = 8 + Math.random()*10;
+    s.style.left = (Math.random()*100)+'%';
+    s.style.width = (diamond ? size : size*2.2)+'px'; s.style.height = (diamond ? size : size*0.55)+'px';
+    s.style.background = cols[i % cols.length];
+    s.style.setProperty('--dx', ((Math.random()-.5)*160).toFixed(0)+'px');
+    s.style.setProperty('--rot', ((diamond ? 45 : 0) + (Math.random()-.5)*360).toFixed(0)+'deg');
+    s.style.transform = diamond ? 'rotate(45deg)' : 'none';
+    s.style.animationDuration = (2.2 + Math.random()*1.6).toFixed(2)+'s';
+    s.style.animationDelay = (Math.random()*.5).toFixed(2)+'s';
+    ov.appendChild(s);
+    setTimeout(() => s.remove(), 4500);
+  }
+}
+function openDialog(){
+  const sel = selection(), d = describe(sel);
+  document.getElementById('dlg-kicker').textContent = '¡Felicitaciones!';
+  document.getElementById('dlg-title').textContent = d.title;
+  document.getElementById('dlg-lead').textContent = d.lead;
+  document.getElementById('dlg-stage').innerHTML = bikeSVG(sel);
+  document.getElementById('dlg-rows').innerHTML = d.rows.map(r =>
+    '<li><span class="chip" style="--c:'+COLOR[r.bike]+';--cc:'+CHIPINK[r.bike]+'"><small>'+r.slot+'</small><b>'+NAME[r.bike]+'</b></span><p>'+r.text+'</p></li>').join('');
+  document.getElementById('dlg-sum').textContent = d.summary;
+  lastFocus = document.activeElement;
+  ov.hidden = false; panel.scrollTop = 0;
+  closeBtn.focus();
+  confetti();
+}
+function closeDialog(){ ov.hidden = true; ov.querySelectorAll('.confetti').forEach(n => n.remove()); if (lastFocus) lastFocus.focus(); }
+ok.addEventListener('click', () => { if (!busy) openDialog(); });
+closeBtn.addEventListener('click', closeDialog);
+document.getElementById('again').addEventListener('click', closeDialog);
+ov.addEventListener('pointerdown', e => { if (e.target === ov) closeDialog(); });
+document.addEventListener('keydown', e => {
+  if (ov.hidden) return;
+  if (e.key === 'Escape'){ closeDialog(); return; }
+  if (e.key === 'Tab'){
+    const f = [...panel.querySelectorAll('button')].filter(b => !b.disabled);
+    const first = f[0], last = f[f.length-1];
+    if (e.shiftKey && document.activeElement === first){ e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && document.activeElement === last){ e.preventDefault(); first.focus(); }
+  }
+});
+</script>
+
+</body></html>
